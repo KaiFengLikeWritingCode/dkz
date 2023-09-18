@@ -1,0 +1,36 @@
+name: Lint Markdown Files
+on:
+  push:
+    branches:
+      - main # 修改为您的默认分支
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install -y proselint
+          # 或者使用 write-good，根据您的偏好
+          # npm install -g write-good
+
+      - name: Lint Markdown Files
+        run: |
+          find . -type f -name "*.md" -exec proselint {} \;
+          # 或者使用 write-good，根据您的偏好
+          # find . -type f -name "*.md" -exec write-good {} \;
+
+      - name: Check for Errors
+        run: |
+          ERROR=$(find . -type f -name "*.md" -exec proselint {} \; 2>&1)
+          # 或者使用 write-good，根据您的偏好
+          # ERROR=$(find . -type f -name "*.md" -exec write-good {} \; 2>&1)
+
+          if [ -n "$ERROR" ]; then
+            echo "Linting errors found:"
+            echo "$ERROR"
+            exit 1
+          fi
